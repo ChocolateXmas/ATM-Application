@@ -1,0 +1,5 @@
+feat(project): Added <requirements.txt> for project dependencies visibility.
+
+- feat(src/): Added src folder for all the main project files.
+- refactor(main.py): Moved the main.py file to /src.
+- feat(src/): Added __init__.py to src/ to make it intrepreted as a python package.
