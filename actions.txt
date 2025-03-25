@@ -1,0 +1,70 @@
+יש לבנות תוכנת כספומט עם ממשק CONSOLE בשפה PYTHON
+מטרת הפרוייקט היא לעשות כספומט לפי התיאור המצורף:
+
+# ATM PROJECT:
+#
+# You need to create an ATM application.
+#
+# THE ATM SUPPORTS THE FOLLOWING OPERATIONS: DEPOSITS,
+# WITHDRAWALS, CHECK BALANCE AND QUIT.
+#
+# THE WAY THE PROGRAM WORKS:
+#
+#
+0. Save several customers in the system 3 like (user1, user2, user3)
+with different pin codes and different names and
+balances for example (&#39;Avi Cohen&#39;, 1234 , 1000), (&#39;Yossi Cohen&#39;, 6543 , 500) , (&#39;Yuri Levi&#39;, 5852, 800) .
+1. Asks the user to input his/her name or (which will have a first name and a last name on it);
+2. GREETS THE USER &quot;Welcome to Avi Cohen&quot;
+3. Asks the user for her/his pin code (pincode are 4 digits,
+need to check if it is correct )
+4. Also need to check if it was the users correct pincode
+5. IF everything went ok, the user gets a new greeting with the
+following options:
+&quot;ATM MENU:&quot;
+&quot;Press button d to Deposit Money&quot;
+&quot;Press button w to Withdraw Money&quot;
+&quot;Press button c to Check your Balance&quot;;
+&quot;Press button q to Quit&quot;;
+Bonus option: &quot;Press button p to change PIN_CODE&quot;
+Bonus option: &quot;Press button R to create RECIPE&quot;
+explained in the 11 section.
+6. If the user pressed &quot;d&quot; the following menu will appear:
+&quot;How much would you like to Deposit?&quot;
+it will get the amount from the user and add it to the Balance.
+**need to check if the amount is a multiplier of 20 50
+or 100 (Because 20 is the lowest bill you can use in ISRAEL)
+** for example I cannot deposit 352 because - 300 is fine + 50 is fine
+
+but 2 - can&#39;t;
+Will print out &quot;OK&quot; or some other conformation and
+Then it will get the user back to the &quot;ATM MENU&quot; screen.
+
+7. If the user pressed &quot;w&quot; following menu will appear:
+&quot;How much would you like to Withdraw?&quot;
+&quot;1 - 50 , 2 - 100 , 3 - 150, 4 - 300, 5 - other &quot;
+If pressed &quot;1&quot; 50 will be subtracted from the current Balance amount
+same with &quot;2&quot;,&quot;3&quot; and &quot;4&quot;;
+But if pressed &quot;5&quot; will be prompt to give own amount and that
+amount will be subtracted from the current Balance amount.
+** Balance cannot go to minus , need to check the subtracted is
+possible (if you have enough money)
+** If not need to say &quot;sorry, operation could not happen,
+you don&#39;t have enough Balance for this operation&quot;
+If everything was alright print out &quot;OK&quot; or some other confirmation and
+Then it will get the user back to the &quot;ATM MENU&quot; screen.
+
+8. If the user pressed &quot;c&quot; it will show his/hers balance
+for example &quot;Your current Balance is 950 NIS&quot;.
+Then it will get the user back to the &quot;ATM MENU&quot; screen.
+9. If the user pressed &quot;q&quot; it will print out &quot;GOODBYE AVI, HAVE A NICE DAY&quot;
+10. The project has to use loops, lists, function
+11. Bonus Points - Challenge:
+1.&quot;Implementing p option to change the pin_code of the Customer to use in the next login to the
+ATM (need to # check if it actually works, try to login with it)&quot;
+2.&quot;Implementing R option to print the data of the customer
+such as Name and LastName and the current balance of this/hers account &quot;
+Example: &quot;&quot;&quot;
+Hello Avi Cohen,
+At this moment DATE: 01/03/23 10:00:00 you got 1000 NIS in you account
+Thank you for using your ATM
