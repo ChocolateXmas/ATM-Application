@@ -23,7 +23,7 @@ class Atm:
     # END __is_logged_in
 
     """
-         False if user already logged in.
+        False if user already logged in.
         Returns True if the user exists and the pin is correct.
         False otherwise.
     """
