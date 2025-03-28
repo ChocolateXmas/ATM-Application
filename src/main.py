@@ -35,13 +35,6 @@ class Menu:
 		self.stdscr.addstr(title_y, title_x, self.__title, curses.color_pair(1) | curses.A_BOLD)
 
 		self.__login(height, width)
-
-		# Display the collected data (for debugging purposes)
-		self.stdscr.clear()
-		self.stdscr.addstr(height // 2, width // 2 - 10, f"Username: {username}", curses.color_pair(1))
-		self.stdscr.addstr(height // 2 + 1, width // 2 - 10, f"PIN: {'*' * len(pin)}", curses.color_pair(1))
-		self.stdscr.refresh()
-		self.stdscr.getch()
 	# END start 	
 
 	def end(self):
@@ -85,7 +78,15 @@ class Menu:
 					pin = pin[:-1]
 					y, x = pin_win.getyx()
 					pin_win.delch(y, x - 1)
+		# END while
 		self.stdscr.refresh()
+		
+		# Display the collected data (for debugging purposes)
+		self.stdscr.clear()
+		self.stdscr.addstr(height // 2, width // 2 - 10, f"Username: {username}", curses.color_pair(1))
+		self.stdscr.addstr(height // 2 + 1, width // 2 - 10, f"PIN: {'*' * len(pin)}", curses.color_pair(1))
+		self.stdscr.refresh()
+		self.stdscr.getch()
 	# END login
 
 	def __del__(self):
