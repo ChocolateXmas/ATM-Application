@@ -4,14 +4,6 @@ import curses
 from curses.textpad import Textbox, rectangle
 from atm import Atm
 
-"""
-&quot;ATM MENU:&quot;
-&quot;Press button d to Deposit Money&quot;
-&quot;Press button w to Withdraw Money&quot;
-&quot;Press button c to Check your Balance&quot;;
-&quot;Press button q to Quit&quot;;
-"""
-
 class Menu:
 	def __init__(self, stdscr, title="Menu"):
 		self.__atm = Atm()
@@ -32,28 +24,14 @@ class Menu:
 		self.__greet_title_y = 1; self.__greet_title_x = self.__get_middle_x(self.__greet_title) # Center the greet title
 
 		# Initialize the menu options
-		# self.__menu_options = [
-		# 	("Deposit Money", "d"),
-		# 	("Withdraw Money", "w"),
-		# 	("Check Balance", "c"),
-		# 	("Quit", "q"),
-		# 	("Change PIN_CODE", "p"),
-		# 	("Get a RECIPE", "R")
-		# ]
 		self.__menu_actions = {
-			"d": {"msg": "Press button d to Deposit Money", "function" : self.__atm.deposit},
-			"w": {"msg": "Press button w to Withdraw Money", "function" : self.__atm.withdraw},
-			"c": {"msg": "Press button c to Check your Balance", "function" : self.__atm.get_balance},
-			"q": {"msg": "Press to q to Quit", "function" : self.__atm.quit},
-			"p": {"msg" : "Press button p to Change PIN_CODE", "function" : self.__atm.change_pin},
-			"R": {"msg" : "Press button R to Get a RECIPE", "function" : self.__atm.get_recipe}
+			"d": {"msg": "Press button d to Deposit Money", "function" : self.__deposit_screen},
+			"w": {"msg": "Press button w to Withdraw Money", "function" : self.__withdraw_screen},
+			"c": {"msg": "Press button c to Check your Balance", "function" : self.__balance_screen},
+			"q": {"msg": "Press to q to Quit", "function" : self.__logout},
+			"p": {"msg" : "Press button p to Change PIN_CODE", "function" : self.__change_pin_screen},
+			"r": {"msg" : "Press button r to Get a RECIPE", "function" : self.__recipe_screen}
 		}
-		# self.__deposit_msg = "Press button d to Deposit Money"
-		# self.__withdraw_msg = "Press button w to Withdraw Money"
-		# self.__check_balance_msg = "Press button c to Check your Balance"
-		# self.__quit_msg = "Press to q to Quit"
-		# self.__change_pin_msg = "Press button p to Change PIN_CODE"
-		# self.__recipe_msg = "Press button R to Get a RECIPE"
 	# END __init__
 
 	def __display_title(self):
@@ -73,6 +51,7 @@ class Menu:
 		self.stdscr.clear()
 
 		while True:
+			self.stdscr.clear()
 			self.__login()
 			self.stdscr.clear()
 			self.__menu_options()
@@ -167,7 +146,7 @@ class Menu:
 		Displays the greeting message after succesful login and waits for a key press to choose action.
 	"""
 	def __menu_options(self):
-		while True:
+		while self.__atm.is_logged_in():
 			self.stdscr.clear()
 			self.stdscr.refresh()
 			self.__display_greet_title()
@@ -179,13 +158,70 @@ class Menu:
 			# END for
 			self.stdscr.refresh()
 			action = self.stdscr.getch()
-			if action == ord("r") or action == ord("R"):
-				check = "HElllooooo"
-				self.stdscr.addstr(middle_y + 2, self.__get_middle_x(check), check, self.__terminal_color | curses.A_BOLD)
-				self.stdscr.getch()
+			# check if the input char is in out menu actions keys (d, w, c, q, p, r)
+			if chr(action) in self.__menu_actions:
+				self.__menu_actions[ chr(action) ]["function"]()
 			# END if
 		# END while
 	# END __greet
+
+	def __deposit_screen(self):
+		# self.__atm.deposit
+		pass
+	# END __deposit_screen
+
+	def __withdraw_screen(self):
+		# __atm.withdraw
+		pass
+	# END __withdraw_screen
+
+	def __balance_screen(self):
+		# __atm.get_balance
+		pass
+	# END __balance_screen
+
+	def __logout(self):
+		middle_y = (self.height // 2) - 2 # mins 2 because we have 2 lines to show (logout_msg | error_msg), and one empty break line between them
+		try: 
+			logout_msg = f"GOODBYE {str(self.__atm.get_user_name())}, HAVE A NICE DAY"
+			self.__atm.logOut()
+			# middle_y = (self.height // 2) - len(logout_msg)
+			self.stdscr.clear()
+			self.stdscr.addstr(middle_y, self.__get_middle_x(logout_msg), logout_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+			self.stdscr.refresh()
+		# END try
+		except ValueError as ve: 
+			error_msg = str(ve)
+			self.stdscr.clear()
+			self.stdscr.addstr(middle_y, self.__get_middle_x(error_msg), error_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+			self.stdscr.refresh()
+		# END except
+		logout_exit_msg = "Press any key to EXIT"
+		self.stdscr.addstr(middle_y + 2, self.__get_middle_x(logout_exit_msg), logout_exit_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+		self.stdscr.refresh()
+		self.stdscr.getch()
+	# END __logout
+
+	def __change_pin_screen(self):
+		# __atm.change_pin
+		pass
+	# END __change_pin_screen
+
+	def __recipe_screen(self):
+		# __atm.get_recipe
+		self.stdscr.clear()
+		recipe_msg = self.__atm.get_recipe() # List of lines of messages
+		middle_y = (self.height // 2) - len(recipe_msg)
+		for msg in recipe_msg:
+			self.stdscr.addstr(middle_y, self.__get_middle_x(msg), msg, self.__terminal_color | curses.A_BOLD | curses.A_ITALIC)
+			middle_y += 1
+		# END for
+		recipe_exit_msg = "Press any key to get BACK"
+		self.stdscr.addstr(middle_y + 1, self.__get_middle_x(recipe_exit_msg), recipe_exit_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+		self.stdscr.refresh()
+		self.stdscr.getch()
+		# pass
+	# END __recipe_screen
 
 	"""
 		gets a string and returns the x coordinate to center it
