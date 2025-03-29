@@ -1,4 +1,5 @@
 from pincode import Pincode
+import datetime
 
 users = {
     "Avi Cohen": {"pin": Pincode("1234"), "balance": 1000},
@@ -103,6 +104,26 @@ class Atm:
     def set_user_name(self, fullName: str) -> str: self.__userName = fullName
 
     def get_balance(self) -> float: return self.__balance
+
+    def change_pin(self, newPin: str) -> None:
+        if not self.__is_logged_in():
+            raise ValueError("User is not logged in")
+        # END if
+        users[self.__userName]["pin"].set_pin(newPin)
+    # END change_pin
+
+    def get_recipe(self) -> list:
+        if not self.__is_logged_in():
+            raise ValueError("User is not logged in")
+        # END if
+        now = datetime.datetime.now() # get the current date and time
+        current_date = now.strftime("%d/%m/%y %H:%M:%S") # format the date and time
+        return [
+            f"Hello {self.__userName},",
+            f"At this moment DATE: {current_date} you got {self.__balance} NIS in your account",
+            f"Thank you for using our ATM service"
+        ]
+    # END get_recipe
 
     def quit(self):
         pass

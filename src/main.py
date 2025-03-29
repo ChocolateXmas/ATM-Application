@@ -30,6 +30,30 @@ class Menu:
 
 		self.__greet_title = "ATM Menu"
 		self.__greet_title_y = 1; self.__greet_title_x = self.__get_middle_x(self.__greet_title) # Center the greet title
+
+		# Initialize the menu options
+		# self.__menu_options = [
+		# 	("Deposit Money", "d"),
+		# 	("Withdraw Money", "w"),
+		# 	("Check Balance", "c"),
+		# 	("Quit", "q"),
+		# 	("Change PIN_CODE", "p"),
+		# 	("Get a RECIPE", "R")
+		# ]
+		self.__menu_actions = {
+			"d": {"msg": "Press button d to Deposit Money", "function" : self.__atm.deposit},
+			"w": {"msg": "Press button w to Withdraw Money", "function" : self.__atm.withdraw},
+			"c": {"msg": "Press button c to Check your Balance", "function" : self.__atm.get_balance},
+			"q": {"msg": "Press to q to Quit", "function" : self.__atm.quit},
+			"p": {"msg" : "Press button p to Change PIN_CODE", "function" : self.__atm.change_pin},
+			"R": {"msg" : "Press button R to Get a RECIPE", "function" : self.__atm.get_recipe}
+		}
+		# self.__deposit_msg = "Press button d to Deposit Money"
+		# self.__withdraw_msg = "Press button w to Withdraw Money"
+		# self.__check_balance_msg = "Press button c to Check your Balance"
+		# self.__quit_msg = "Press to q to Quit"
+		# self.__change_pin_msg = "Press button p to Change PIN_CODE"
+		# self.__recipe_msg = "Press button R to Get a RECIPE"
 	# END __init__
 
 	def __display_title(self):
@@ -51,7 +75,7 @@ class Menu:
 		while True:
 			self.__login()
 			self.stdscr.clear()
-			self.__greet()
+			self.__menu_options()
 		# END while
 	# END start 	
 
@@ -125,7 +149,7 @@ class Menu:
 			# END while
 			self.__clear_line(pin_y + 2)
 			self.stdscr.refresh()
-			# Check if the username and PIN are correct
+			# Check if the username and PIN are correct, and set the user info
 			if not self.__atm.login(username, pin):
 				login_failed_msg = "Invalid username/PIN. try again. (Enter to continue)"
 				login_x = self.__get_middle_x(login_failed_msg)
@@ -139,11 +163,28 @@ class Menu:
 		# END while
 	# END login
 
-	def __greet(self):
-		self.stdscr.clear()
-		self.stdscr.refresh()
-		self.__display_greet_title()
-		self.stdscr.getch()
+	"""
+		Displays the greeting message after succesful login and waits for a key press to choose action.
+	"""
+	def __menu_options(self):
+		while True:
+			self.stdscr.clear()
+			self.stdscr.refresh()
+			self.__display_greet_title()
+			middle_y = (self.height // 2) - len(self.__menu_actions)
+			for action, options in self.__menu_actions.items():
+				msg = options["msg"]
+				self.stdscr.addstr(middle_y, self.__get_middle_x(msg), msg, self.__terminal_color | curses.A_BOLD)
+				middle_y += 1
+			# END for
+			self.stdscr.refresh()
+			action = self.stdscr.getch()
+			if action == ord("r") or action == ord("R"):
+				check = "HElllooooo"
+				self.stdscr.addstr(middle_y + 2, self.__get_middle_x(check), check, self.__terminal_color | curses.A_BOLD)
+				self.stdscr.getch()
+			# END if
+		# END while
 	# END __greet
 
 	"""
