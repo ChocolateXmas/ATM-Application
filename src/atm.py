@@ -19,7 +19,7 @@ class Atm:
         Returns True if user is logged in.
         False otherwise.
     """
-    def __is_logged_in(self) -> bool: 
+    def is_logged_in(self) -> bool: 
         return self.__loggedIn
     # END __is_logged_in
 
@@ -29,7 +29,7 @@ class Atm:
         False otherwise.
     """
     def login(self, fullName: str, pin: str) -> bool:
-        if self.__is_logged_in():
+        if self.is_logged_in():
             return False
         if fullName in users:
             if hash(users[fullName]["pin"]) == hash(pin):
@@ -47,7 +47,7 @@ class Atm:
         Continues regularly if the user log out successful, and sets all info to None.
     """
     def logOut(self) -> None:
-        if not self.__is_logged_in():
+        if not self.is_logged_in():
             raise ValueError("User is not logged in")
         self.__userName = None
         self.__pinCode = None
@@ -62,7 +62,7 @@ class Atm:
 
     # Raises a ValueError if the user is not logged in
     def __ensure_logged_in(self) -> None: 
-        if not self.__is_logged_in():
+        if not self.is_logged_in():
             raise ValueError("User is not logged in")
     # END ensure_logged_in
 
@@ -106,14 +106,14 @@ class Atm:
     def get_balance(self) -> float: return self.__balance
 
     def change_pin(self, newPin: str) -> None:
-        if not self.__is_logged_in():
+        if not self.is_logged_in():
             raise ValueError("User is not logged in")
         # END if
         users[self.__userName]["pin"].set_pin(newPin)
     # END change_pin
 
     def get_recipe(self) -> list:
-        if not self.__is_logged_in():
+        if not self.is_logged_in():
             raise ValueError("User is not logged in")
         # END if
         now = datetime.datetime.now() # get the current date and time
