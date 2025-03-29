@@ -19,7 +19,7 @@ class Atm:
         False otherwise.
     """
     def __is_logged_in(self) -> bool: 
-        return self.__isLogged
+        return self.__loggedIn
     # END __is_logged_in
 
     """
@@ -30,7 +30,7 @@ class Atm:
     def login(self, fullName: str, pin: str) -> bool:
         if self.__is_logged_in():
             return False
-        if fullname in users:
+        if fullName in users:
             if hash(users[fullName]["pin"]) == hash(pin):
                 self.__userName = fullName
                 self.__pincode = hash(pin)
