@@ -63,17 +63,62 @@ class Menu:
 		curses.endwin()
 	# END end
 
+	"""
+		Gets the Y-coordinate of a former element for displaying the PINCODE input box below it accordingly.
+		former:bool is True if we have a former element above the PINCODE input box, False otherwise
+
+		Returns:
+			str: The entered PIN code as a string.
+	"""
+	def __show_pincode_inputbox(self, pin_y, former=False) -> str:
+		pin_prompt = "Enter PIN (4 digits): "
+		max_pin_length = 14
+		pin_y += 2 if former else 0
+		pin_x = self.__get_middle_x(pin_prompt + " " * max_pin_length)
+		# Input for PIN (hidden with *)
+		self.stdscr.addstr(pin_y, pin_x, pin_prompt, self.__input_color)
+		pin_win = curses.newwin(1, max_pin_length, pin_y, pin_x + len(pin_prompt))
+		curses.textpad.rectangle(self.stdscr, pin_y - 1, pin_x + len(pin_prompt) - 1,
+									pin_y + 1, pin_x + len(pin_prompt) + max_pin_length)
+		self.stdscr.refresh()
+		# PIN input
+		pin = ""
+		while True:
+			key = pin_win.getch()
+			if key in range(48, 58): # Check if the key is a digit (ASCII 48-57)
+				if len(pin) < max_pin_length - 1:
+					pin += chr(key)
+					pin_win.addch('*')
+				# END if 
+			# END if
+			elif key == curses.KEY_BACKSPACE or key == 127: # Handle backspace
+				if len(pin) > 0:
+					pin = pin[:-1]
+					y, x = pin_win.getyx()
+					pin_win.delch(y, x - 1)
+				# END if
+			# END elif
+			elif key == curses.KEY_ENTER or key == 10 or key == 13: # Enter key
+				if len(pin) == 4:
+					break
+				empty_pin_msg = "PIN must be 4 digits. Please try again."
+				self.stdscr.addstr(pin_y + 2, self.__get_middle_x(empty_pin_msg), empty_pin_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
+				self.stdscr.refresh()
+			# END elif
+		# END while
+		self.__clear_line(pin_y + 2)
+		self.stdscr.refresh()
+		return pin
+	# END __show_pincode_inputbox
+
 	def __login(self):
 		while True:
 			self.__display_title()
 			# Center the input fields
 			username_prompt = "Enter Username: "
-			pin_prompt = "Enter PIN (4 digits): "
-			max_username_length = 20; max_pin_length = 14
+			max_username_length = 20
 			username_y = self.height // 2 - 2
 			username_x = self.__get_middle_x(username_prompt + " " * max_username_length)
-			pin_y = self.height // 2
-			pin_x = self.__get_middle_x(pin_prompt + " " * max_pin_length)
 			# Username input box
 			self.stdscr.addstr(username_y, username_x, username_prompt, self.__input_color)
 			username_win = curses.newwin(1, 20, username_y, username_x + len(username_prompt))
@@ -95,44 +140,14 @@ class Menu:
 			welcome_x = self.__get_middle_x(welcome_msg)
 			self.stdscr.addstr(username_y, welcome_x, welcome_msg, self.__terminal_color | curses.A_BOLD)
 			self.stdscr.refresh()
-			# Input for PIN (hidden with *)
-			self.stdscr.addstr(pin_y, pin_x, pin_prompt, self.__input_color)
-			pin_win = curses.newwin(1, max_pin_length, pin_y, pin_x + len(pin_prompt))
-			curses.textpad.rectangle(self.stdscr, pin_y - 1, pin_x + len(pin_prompt) - 1,
-										pin_y + 1, pin_x + len(pin_prompt) + max_pin_length)
-			self.stdscr.refresh()
-			# PIN input
-			pin = ""
-			while True:
-				key = pin_win.getch()
-				if key in range(48, 58): # Check if the key is a digit (ASCII 48-57)
-					if len(pin) < max_pin_length - 1:
-						pin += chr(key)
-						pin_win.addch('*')
-					# END if 
-				# END if
-				elif key == curses.KEY_BACKSPACE or key == 127: # Handle backspace
-					if len(pin) > 0:
-						pin = pin[:-1]
-						y, x = pin_win.getyx()
-						pin_win.delch(y, x - 1)
-					# END if
-				# END elif
-				elif key == curses.KEY_ENTER or key == 10 or key == 13: # Enter key
-					if len(pin) == 4:
-						break
-					empty_pin_msg = "PIN must be 4 digits. Please try again."
-					self.stdscr.addstr(pin_y + 2, self.__get_middle_x(empty_pin_msg), empty_pin_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
-					self.stdscr.refresh()
-				# END elif
-			# END while
-			self.__clear_line(pin_y + 2)
-			self.stdscr.refresh()
+
+			pin = self.__show_pincode_inputbox(username_y , True)
+
 			# Check if the username and PIN are correct, and set the user info
 			if not self.__atm.login(username, pin):
 				login_failed_msg = "Invalid username/PIN. try again. (Enter to continue)"
 				login_x = self.__get_middle_x(login_failed_msg)
-				self.stdscr.addstr(pin_y + 2, login_x, login_failed_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
+				self.stdscr.addstr(username_y + 4, login_x, login_failed_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
 				self.stdscr.refresh()
 				self.stdscr.getch()
 				self.stdscr.clear()
@@ -181,7 +196,7 @@ class Menu:
 	# END __balance_screen
 
 	def __logout(self):
-		middle_y = (self.height // 2) - 2 # mins 2 because we have 2 lines to show (logout_msg | error_msg), and one empty break line between them
+		middle_y = (self.height // 2) - 2 # minus 2 because we have 2 lines to show (logout_msg | error_msg), and one empty break line between them
 		try: 
 			logout_msg = f"GOODBYE {str(self.__atm.get_user_name())}, HAVE A NICE DAY"
 			self.__atm.logOut()
@@ -202,9 +217,36 @@ class Menu:
 		self.stdscr.getch()
 	# END __logout
 
+	"""
+		def change_pin(self, newPin: str) -> None:
+			if not self.is_logged_in():
+				raise ValueError("User is not logged in")
+			# END if
+			users[self.__userName]["pin"].set_pin(newPin)
+		# END change_pin
+	"""
 	def __change_pin_screen(self):
 		# __atm.change_pin
-		pass
+		middle_y = (self.height // 2) - 3 # minus 3 because we have 3 lines to show (logout_msg | error_msg), and one empty break line between them
+		try:
+			self.stdscr.clear() 
+			new_pin_msg = f"Hello {str(self.__atm.get_user_name())}, Enter NEW PINCODE"
+			self.stdscr.addstr(middle_y, self.__get_middle_x(new_pin_msg), new_pin_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+			self.stdscr.refresh()
+			new_pin = self.__show_pincode_inputbox(middle_y , True)
+			self.__atm.change_pin(new_pin)
+		# END try
+		except ValueError as ve: 
+			error_msg = str(ve)
+			self.stdscr.clear()
+			self.stdscr.addstr(middle_y, self.__get_middle_x(error_msg), error_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+			self.stdscr.refresh()
+		# END except
+		middle_y += 4
+		new_pin_exit_msg = "PINCODE changed succesfuly! Press any key to get BACK"
+		self.stdscr.addstr(middle_y + 2, self.__get_middle_x(new_pin_exit_msg), new_pin_exit_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+		self.stdscr.refresh()
+		self.stdscr.getch()
 	# END __change_pin_screen
 
 	def __recipe_screen(self):

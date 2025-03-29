@@ -124,8 +124,4 @@ class Atm:
             f"Thank you for using our ATM service"
         ]
     # END get_recipe
-
-    def quit(self):
-        pass
-    # END Atm
 # END Atm
