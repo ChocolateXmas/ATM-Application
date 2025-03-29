@@ -6,18 +6,22 @@ from atm import Atm
 
 class Menu:
 	def __init__(self, stdscr, title="Menu"):
-		self.__title  = title
-
+		self.__atm = Atm()
 		# Initialize the ATM application Colors
 		curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)
 		self.__terminal_color = curses.color_pair(1) # Set the terminal color
-		
 		curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
 		self.__input_color = curses.color_pair(2) # Set the input color
-
-		self.stdscr = stdscr
-		self.__atm = Atm()
+		self.stdscr = stdscr # Store the standard screen object
+		self.__title  = title
+		self.height, self.width = self.stdscr.getmaxyx() # Get terminal dimensions
+		self.__title_y = 1; self.__title_x = ((self.width - len(self.__title)) // 2) # Center the title
 	# END __init__
+
+	def __display_title(self):
+		# Display the title at the top center
+		self.stdscr.addstr(self.__title_y, self.__title_x, self.__title, self.__terminal_color | curses.A_BOLD)
+	# END __display_title	
 
 	def start(self):
 		curses.start_color()
@@ -26,15 +30,11 @@ class Menu:
 		self.stdscr.bkgd(' ', self.__terminal_color)
 		self.stdscr.clear()
 
-		# Get terminal dimensions
-		height, width = self.stdscr.getmaxyx()
-
-		# Display the title at the top center
-		title_y = 1
-		title_x = (width - len(self.__title)) // 2
-		self.stdscr.addstr(title_y, title_x, self.__title, curses.color_pair(1) | curses.A_BOLD)
-
-		self.__login(height, width)
+		while True:
+			self.__display_title()
+			self.__login()
+			self.stdscr.clear()
+		# END while
 	# END start 	
 
 	def end(self):
@@ -42,13 +42,13 @@ class Menu:
 		curses.endwin()
 	# END end
 
-	def __login(self, height, width):
+	def __login(self):
 		# Center the input fields
 		username_prompt = "Enter Username: "
 		pin_prompt = "Enter PIN (4 digits): "
-		username_y = height // 2 - 2
-		username_x = (width - len(username_prompt) - 20) // 2
-		pin_y = height // 2
+		username_y = self.height // 2 - 2
+		username_x = (self.width - len(username_prompt) - 20) // 2
+		pin_y = self.height // 2
 		pin_x = username_x
 
 		# Input for username
@@ -83,8 +83,8 @@ class Menu:
 		
 		# Display the collected data (for debugging purposes)
 		self.stdscr.clear()
-		self.stdscr.addstr(height // 2, width // 2 - 10, f"Username: {username}", curses.color_pair(1))
-		self.stdscr.addstr(height // 2 + 1, width // 2 - 10, f"PIN: {'*' * len(pin)}", curses.color_pair(1))
+		self.stdscr.addstr(self.height // 2, self.width // 2 - 10, f"Username: {username}", curses.color_pair(1))
+		self.stdscr.addstr(self.height // 2 + 1, self.width // 2 - 10, f"PIN: {'*' * len(pin)}", curses.color_pair(1))
 		self.stdscr.refresh()
 		self.stdscr.getch()
 	# END login
