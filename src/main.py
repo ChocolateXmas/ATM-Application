@@ -400,7 +400,20 @@ class Menu:
 
 	def __balance_screen(self):
 		# __atm.get_balance
-		pass
+		self.stdscr.clear()
+		balance_msg = [ 
+			"Your current balance: ", 
+			f"{self.__atm.get_balance()} NIS"
+		]
+		middle_y = (self.height // 2) - len(balance_msg)
+		for msg in balance_msg:
+			self.stdscr.addstr(middle_y, self.__get_middle_x(msg), msg, self.__terminal_color | curses.A_BOLD | curses.A_ITALIC)
+			middle_y += 1
+		# END for
+		balance_exit_msg = "Press any key to get BACK"
+		self.stdscr.addstr(middle_y + 1, self.__get_middle_x(balance_exit_msg), balance_exit_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+		self.stdscr.refresh()
+		self.stdscr.getch()
 	# END __balance_screen
 
 	def __logout(self):
