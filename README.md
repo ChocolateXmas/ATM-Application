@@ -69,3 +69,7 @@ The project is structured using loops, lists, and functions for efficient progra
 [curses-badge]: https://img.shields.io/badge/curses-000000?style=for-the-badge&logo=terminal&logoColor=white
 [curses-icon]: https://img.shields.io/badge/-000000?style=flat-square&logo=terminal&logoColor=white
 [curses-url]: https://docs.python.org/3/library/curses.html
+
+# Eran
+You did a very good job in general. You did all the requirements in the code in hight level way.
+Just to add a pull request, this is the way we need to work in the real world. We at least need two branches: dev and main and open pull request to merge from dev to main.
