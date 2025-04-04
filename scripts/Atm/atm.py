@@ -1,4 +1,4 @@
-from pincode import Pincode
+from ..Pincode.pincode import Pincode
 import datetime
 
 users = {
