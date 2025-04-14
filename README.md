@@ -2,7 +2,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h1 align="center">ATM Application - Alex Beigel</h1>
+  <h1 align="center">ATM Application</h1>
 
   <p align="center">
     Shell UI ATM Aplication

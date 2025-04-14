@@ -41,6 +41,8 @@ class Menu:
 		# Dict comphrehension for options to withdraw ( 1 - 50, 2 - 100, etc ...)
 		self.__withdraw_options = { str(option + 1) : (self.__withdraw_amounts[option] if option < len(self.__withdraw_amounts) else "Other")
 									for option in range(0, len(self.__withdraw_amounts) + 1) }
+
+		self.__running = True # Flag to control the main loop
 	# END __init__
 
 	def __display_title(self):
@@ -48,24 +50,34 @@ class Menu:
 		self.stdscr.addstr(self.__title_y, self.__title_x, self.__title, self.__terminal_color | curses.A_BOLD)
 	# END __display_title	
 
-
-
 	def __display_greet_title(self):
 		self.stdscr.addstr(self.__greet_title_y, self.__greet_title_x, self.__greet_title, self.__terminal_color | curses.A_BOLD)
 	# END __display_greet_title
 
 	def start(self):
+		# curses.curs_set(0)  # Hide cursor
+		# self.stdscr.nodelay(True)  # Set non-blocking mode
+		# self.stdscr.timeout(1)  # Timeout in milliseconds
 		curses.start_color()
 
 		# Set the background color
 		self.stdscr.bkgd(' ', self.__terminal_color)
 		self.stdscr.clear()
 
-		while True:
+		while self.__running:
+			# key = self.stdscr.getch()
+			# if key == 27: # ESC key
+			# 	self.end()
+			# 	break
+			# # END if
+			# elif key == -1:
+			# 	continue
+			# else:
 			self.stdscr.clear()
 			self.__login()
 			self.stdscr.clear()
 			self.__menu_options()
+			# END else
 		# END while
 	# END start 	
 
@@ -199,6 +211,44 @@ class Menu:
 	# END __show_withdraw_options
 
 	"""
+		Gets the Y-coordinate for USERNAME input box location.
+		formerElement:bool is True if we have a former element above the USERNAME input box - that way the input box will be below it with an empty break line,
+							False otherwise.
+
+		Returns:
+			str: The entered username as a string.
+	"""
+	def __show_username_inputbox(self, username_y, formerElement=False) -> str:
+		username_prompt = "Enter Username: "
+		max_username_length = 20
+		username_y += 2 if formerElement else 0
+		username_x = self.__get_middle_x(username_prompt + " " * max_username_length)
+		# Username input box
+		self.stdscr.addstr(username_y, username_x, username_prompt, self.__input_color)
+		username_win = curses.newwin(1, max_username_length, username_y, username_x + len(username_prompt))
+		curses.textpad.rectangle(self.stdscr, username_y - 1, username_x + len(username_prompt) - 1, username_y + 1, username_x + len(username_prompt) + max_username_length)
+		username = ""
+		# Input for username
+		while len(username) == 0:
+			self.stdscr.refresh()
+			username_box = curses.textpad.Textbox(username_win)
+			username = username_box.edit().strip()
+			if len(username) == 0:
+				empty_username_msg = "Username cannot be empty. Please try again."
+				self.stdscr.addstr(username_y + 2, self.__get_middle_x(empty_username_msg), empty_username_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
+				self.stdscr.refresh()
+			# END if
+		# END while
+		self.__clear_line( *range(username_y -1, username_y + 2 + 1) ) # Clear textbox & username input line
+		welcome_msg = f"Welcome, {username}!"
+		welcome_x = self.__get_middle_x(welcome_msg)
+		self.stdscr.addstr(username_y, welcome_x, welcome_msg, self.__terminal_color | curses.A_BOLD)
+		self.stdscr.refresh()
+
+		return username
+	# END __show_username_inputboxß
+
+	"""
 		Gets the Y-coordinate for PINCODE input box location.
 		formerElement:bool is True if we have a former element above the PINCODE input box - that way the input box will be below it with an empty break line,
 							  False otherwise.
@@ -234,6 +284,8 @@ class Menu:
 					pin_win.delch(y, x - 1)
 				# END if
 			# END elif
+			elif key == 27:
+				self.end() # ESC key
 			elif key == curses.KEY_ENTER or key == 10 or key == 13: # Enter key
 				if len(pin) == 4:
 					break
@@ -246,44 +298,26 @@ class Menu:
 		self.stdscr.refresh()
 		return pin
 	# END __show_pincode_inputbox
+	
+	def __display_back_title(self):
+		get_back_msg = "Press ESC to go BACK"
+		self.stdscr.addstr(self.height - 1, self.__get_middle_x(get_back_msg), get_back_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT)
+		self.stdscr.refresh()		
+	# END __display_back_title
 
 	def __login(self):
 		while True:
 			self.__display_title()
-			# Center the input fields
-			username_prompt = "Enter Username: "
-			max_username_length = 20
-			username_y = self.height // 2 - 2
-			username_x = self.__get_middle_x(username_prompt + " " * max_username_length)
-			# Username input box
-			self.stdscr.addstr(username_y, username_x, username_prompt, self.__input_color)
-			username_win = curses.newwin(1, 20, username_y, username_x + len(username_prompt))
-			curses.textpad.rectangle(self.stdscr, username_y - 1, username_x + len(username_prompt) - 1, username_y + 1, username_x + len(username_prompt) + 20)
-			username = ""
-			# Input for username
-			while len(username) == 0:
-				self.stdscr.refresh()
-				username_box = curses.textpad.Textbox(username_win)
-				username = username_box.edit().strip()
-				if len(username) == 0:
-					empty_username_msg = "Username cannot be empty. Please try again."
-					self.stdscr.addstr(username_y + 2, self.__get_middle_x(empty_username_msg), empty_username_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
-					self.stdscr.refresh()
-				# END if
-			# END while
-			self.__clear_line( *range(username_y -1, username_y + 2 + 1) ) # Clear textbox & username input line
-			welcome_msg = f"Welcome, {username}!"
-			welcome_x = self.__get_middle_x(welcome_msg)
-			self.stdscr.addstr(username_y, welcome_x, welcome_msg, self.__terminal_color | curses.A_BOLD)
-			self.stdscr.refresh()
-
-			pin = self.__show_pincode_inputbox(username_y , formerElement=True)
+			self.__display_back_title()
+			screen_y = self.height // 2 - 2 # Center the username input box
+			username = self.__show_username_inputbox(screen_y)
+			pin = self.__show_pincode_inputbox(screen_y , formerElement=True)
 
 			# Check if the username and PIN are correct, and set the user info
 			if not self.__atm.login(username, pin):
 				login_failed_msg = "Invalid username/PIN. try again. (Enter to continue)"
 				login_x = self.__get_middle_x(login_failed_msg)
-				self.stdscr.addstr(username_y + 4, login_x, login_failed_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
+				self.stdscr.addstr(screen_y + 4, login_x, login_failed_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
 				self.stdscr.refresh()
 				self.stdscr.getch()
 				self.stdscr.clear()
@@ -501,6 +535,7 @@ class Menu:
 def main(stdscr):
 	menu = Menu(stdscr, "ATM System")
 	menu.start()
+	menu.end()
 # END main
 
 if __name__ == "__main__":
