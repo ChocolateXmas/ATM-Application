@@ -1,5 +1,2 @@
-# ATM-Application
-
-## Dependencies
-- This project only uses built-in Python libraries.
-- Requires Python 3.x (tested with Python 3.13.2).
+mysql-connector-python
+python-dotenv

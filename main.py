@@ -36,7 +36,7 @@ class Menu:
 		self.__withdraw_amounts = [50, 100, 150, 300]
 		"""
 			self.__withdraw_options : dict()
-				\ * -> 	(option: amount) ~ (str: int[amount] / str["Other"])
+			* -> 	(option: amount) ~ (str: int[amount] / str["Other"])
 		"""
 		# Dict comphrehension for options to withdraw ( 1 - 50, 2 - 100, etc ...)
 		self.__withdraw_options = { str(option + 1) : (self.__withdraw_amounts[option] if option < len(self.__withdraw_amounts) else "Other")
