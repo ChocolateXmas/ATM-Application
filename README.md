@@ -101,13 +101,28 @@ MyUserSecurePassword456
 docker-compose up --build
 ```
 
+---
+
 This will:
 - Build the Python app container (`main.py`)
 - Start a MySQL container
 - Mount secrets securely inside the containers
 - Initialize your database using `schema.sql`
 
+### ✅ Optional: Test Access to Secrets Inside Containers
+To check if the secrets are loaded correctly:
+```bash
+docker exec -it atm_app_container_name cat /run/secrets/db_user_password
+```
 
+---
+
+### 🧪 Development Tips
+- Edit your code on a feature branch (like `feat-sql-integration`)
+- Use Docker secrets for local dev, staging, and prod
+- Never commit real credentials into GitHub
+
+---
 
 [python-badge]: https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white
 [python-icon]: https://img.shields.io/badge/-3776AB?style=flat-square&logo=python&logoColor=white
