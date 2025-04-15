@@ -1,3 +1,9 @@
+tmp
 venv/
-__pycache__/
+src/__pycache__/
 gitMsg.txt
+scripts/Atm/__pycache__/
+scripts/Pincode/__pycache__/
+scripts/__pycache__/
+secrets/db_root_password.txt
+secrets/db_user_password.txt
