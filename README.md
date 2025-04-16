@@ -79,11 +79,16 @@ cd ATM-Application
 We **don't include passwords** directly in this repo for security reasons. Instead, we provide `.example` files. You need to copy and fill them in:
 
 ```bash
+cp secrets/db_host.txt.example secrets/db_host.txt
+cp secrets/db_name.txt.example secrets/db_name.txt
+cp secrets/db_password.txt.example secrets/db_password.txt
 cp secrets/db_root_password.txt.example secrets/db_root_password.txt
+cp secrets/db_root_user.txt.example secrets/db_root_user.txt
 cp secrets/db_user_password.txt.example secrets/db_user_password.txt
+cp secrets/db_user.txt.example secrets/db_user.txt
 ```
 
-Then open each file and add your own secure passwords:
+Then open each file and add your own secure credentials:
 ```
 # secrets/db_root_password.txt
 MySuperSecretRootPass123
@@ -97,10 +102,28 @@ MyUserSecurePassword456
 ---
 
 ### 🐳 Step 3: Run the Project with Docker Compose
-```bash
-docker-compose up --build
-```
+#### Option 1 - Automatically:
 
+- Runs the interactive shell menu automatically
+
+```bash
+docker compose run --rm app
+```
+#### Option 2 - Manually:
+1. 
+verbosely:
+```bash
+docker compose up --build
+```
+or 
+detached:
+```bash
+docker compose up  --build -d
+```
+2. run the interactive menu shell
+```bash
+docker exec -it atm_app python3 main.py
+```
 ---
 
 This will:
@@ -118,7 +141,7 @@ docker exec -it atm_app_container_name cat /run/secrets/db_user_password
 ---
 
 ### 🧪 Development Tips
-- Edit your code on a feature branch (like `feat-sql-integration`)
+- Edit your code on a feature/develop branch (like `feat-sql-integration / develop`)
 - Use Docker secrets for local dev, staging, and prod
 - Never commit real credentials into GitHub
 
