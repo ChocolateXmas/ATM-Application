@@ -2,7 +2,7 @@
 
 import curses
 from curses.textpad import Textbox, rectangle
-from scripts.Atm.atm import Atm
+from scripts.atm.atm import Atm
 
 class Menu:
 	def __init__(self, stdscr, title="Menu"):
@@ -531,12 +531,3 @@ class Menu:
 		curses.endwin()
 	# END __del__
 # END Menu
-
-def main(stdscr):
-	menu = Menu(stdscr, "ATM System")
-	menu.start()
-	menu.end()
-# END main
-
-if __name__ == "__main__":
-	curses.wrapper(main)

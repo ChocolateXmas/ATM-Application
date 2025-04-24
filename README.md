@@ -60,6 +60,9 @@ The project is structured using loops, lists, and functions for efficient progra
 
 - [![Python Badge][python-badge]][python-url]  
 - [![Curses Badge][curses-badge]][curses-url]
+- [![Docker Badge][docker-badge]][docker-url]
+- [![Bash Badge][bash-badge]][bash-url]
+- [![MySQL Badge][mysql-badge]][mysql-url]
 
 <!-- INSTALLATION -->
 <a id="Installation 🔧"></a>
@@ -79,11 +82,13 @@ cd ATM-Application
 We **don't include passwords** directly in this repo for security reasons. Instead, we provide `.example` files. You need to copy and fill them in:
 
 ```bash
-cp secrets/db_root_password.txt.example secrets/db_root_password.txt
-cp secrets/db_user_password.txt.example secrets/db_user_password.txt
+cp secrets/mysql_name.txt.example secrets/mysql_name.txt
+cp secrets/mysql_password.txt.example secrets/mysql_password.txt
+cp secrets/mysql_root_password.txt.example secrets/mysql_root_password.txt
+cp secrets/mysql_user.txt.example secrets/mysql_user.txt
 ```
 
-Then open each file and add your own secure passwords:
+Then open each file and add your own secure credentials:
 ```
 # secrets/db_root_password.txt
 MySuperSecretRootPass123
@@ -97,10 +102,28 @@ MyUserSecurePassword456
 ---
 
 ### 🐳 Step 3: Run the Project with Docker Compose
-```bash
-docker-compose up --build
-```
+#### Option 1 - Automatically (One Liner):
 
+- Runs the interactive shell menu automatically
+
+```bash
+docker compose run --rm app
+```
+#### Option 2 - Manually:
+1. 
+verbosely:
+```bash
+docker compose up --build
+```
+or 
+detached:
+```bash
+docker compose up  --build -d
+```
+2. run the interactive menu shell
+```bash
+docker exec -it atm_app python3 main.py
+```
 ---
 
 This will:
@@ -118,7 +141,7 @@ docker exec -it atm_app_container_name cat /run/secrets/db_user_password
 ---
 
 ### 🧪 Development Tips
-- Edit your code on a feature branch (like `feat-sql-integration`)
+- Edit your code on a feature/develop branch (like `develop / feat-sql-integration / other-branch`)
 - Use Docker secrets for local dev, staging, and prod
 - Never commit real credentials into GitHub
 
@@ -131,3 +154,15 @@ docker exec -it atm_app_container_name cat /run/secrets/db_user_password
 [curses-badge]: https://img.shields.io/badge/curses-000000?style=for-the-badge&logo=terminal&logoColor=white
 [curses-icon]: https://img.shields.io/badge/-000000?style=flat-square&logo=terminal&logoColor=white
 [curses-url]: https://docs.python.org/3/library/curses.html
+
+[docker-badge]: https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white
+[docker-icon]: https://img.shields.io/badge/-2496ED?style=flat-square&logo=docker&logoColor=white
+[docker-url]: https://www.docker.com/
+
+[mysql-badge]: https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white
+[mysql-icon]: https://img.shields.io/badge/-4479A1?style=flat-square&logo=mysql&logoColor=white
+[mysql-url]: https://www.mysql.com/
+
+[bash-badge]: https://img.shields.io/badge/bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white
+[bash-icon]: https://img.shields.io/badge/-4EAA25?style=flat-square&logo=gnubash&logoColor=white
+[bash-url]: https://www.gnu.org/software/bash/
