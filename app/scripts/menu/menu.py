@@ -17,7 +17,7 @@ class Menu:
 		self.stdscr = stdscr # Store the standard screen object
 		self.height, self.width = self.stdscr.getmaxyx() # Get terminal dimensions
 		
-		self.__title  = title
+		self.__title  = title # Holds a given title from args, DEFAULT = "Menu"
 		self.__title_y = 1; self.__title_x = self.__get_middle_x(self.__title) # Center the title
 
 		self.__greet_title = "ATM Menu"
@@ -50,12 +50,18 @@ class Menu:
 		self.stdscr.addstr(self.__title_y, self.__title_x, self.__title, self.__terminal_color | curses.A_BOLD)
 	# END __display_title	
 
-	def __display_greet_title(self):
+	def __display_greet_title(self, user_fullname):
 		self.stdscr.addstr(self.__greet_title_y, self.__greet_title_x, self.__greet_title, self.__terminal_color | curses.A_BOLD)
+		# For security purposes, we will show Welcome <USER_NAME> only if the user is logged in
+		if user_fullname:
+			welcome_msg = f"Welcome, {user_fullname}!"
+			welcome_x = self.__get_middle_x(welcome_msg)
+			self.stdscr.addstr(self.__greet_title_y + 1, welcome_x, welcome_msg, self.__terminal_color | curses.A_BOLD)
+		# END if
 	# END __display_greet_title
 
 	def start(self):
-		# curses.curs_set(0)  # Hide cursor
+		curses.curs_set(0)  # Hide cursor
 		# self.stdscr.nodelay(True)  # Set non-blocking mode
 		# self.stdscr.timeout(1)  # Timeout in milliseconds
 		curses.start_color()
@@ -211,6 +217,63 @@ class Menu:
 	# END __show_withdraw_options
 
 	"""
+		Gets the Y-coordinate for ID NUMBER input box location.
+		formerElement:bool is True if we have a former element above the ID NUMBER input box - that way the input box will be below it with an empty break line,
+							False otherwise.
+
+		Returns:
+			str: The entered ID NUMBER as a string.
+	"""
+	def __show_user_id_num_inputbox(self, user_id_num_y, formerElement=False) -> str:
+		user_id_num_prompt = "Enter ID: "
+		max_user_id_num_length = 10 # max length of ID number is 9 + 1 for the space
+		user_id_num_y += 2 if formerElement else 0
+		user_id_num_x = self.__get_middle_x(user_id_num_prompt + " " * max_user_id_num_length)
+		# Username input box
+		self.stdscr.addstr(user_id_num_y, user_id_num_x, user_id_num_prompt, self.__input_color)
+		user_id_num_win = curses.newwin(1, max_user_id_num_length, user_id_num_y, user_id_num_x + len(user_id_num_prompt))
+		curses.textpad.rectangle(self.stdscr, user_id_num_y - 1, user_id_num_x + len(user_id_num_prompt) - 1, user_id_num_y + 1, user_id_num_x + len(user_id_num_prompt) + max_user_id_num_length)
+		user_id_num = ""
+		max_censored_length = 6
+		# Input for username
+		while True:
+			self.stdscr.refresh()
+			key = user_id_num_win.getch()
+			if key in range(48, 58) and len(user_id_num) < (max_user_id_num_length - 1): # Check if the key is a digit (ASCII 48-57)
+				if len(user_id_num) < max_censored_length:
+					user_id_num += chr(key)
+					user_id_num_win.addch('*')
+				# END if 
+				else:
+					user_id_num += chr(key)
+					user_id_num_win.addch( chr(key) )
+				# END else
+			# END if
+			elif key == curses.KEY_BACKSPACE or key == 127: # Handle backspace
+				if len(user_id_num) > 0:
+					user_id_num = user_id_num[:-1]
+					y, x = user_id_num_win.getyx()
+					user_id_num_win.delch(y, x - 1)
+				# END if
+			elif key == curses.KEY_ENTER or key == 10 or key == 13: # Enter key
+				if len(user_id_num) == (max_user_id_num_length - 1):
+					break
+				len_9_user_id_num_msg = f"ID must containe {max_user_id_num_length - 1} digits. Please try again."
+				self.stdscr.addstr(user_id_num_y + 2, self.__get_middle_x(len_9_user_id_num_msg), len_9_user_id_num_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
+				self.stdscr.refresh()
+			# END elif
+		# END while
+		self.__clear_line( *range(user_id_num_y -1, user_id_num_y + 2 + 1) ) # Clear textbox & username input line
+		welcome_msg = f"Welcome, {"*" * (max_censored_length)}{user_id_num[max_censored_length:]}!"
+		welcome_x = self.__get_middle_x(welcome_msg)
+		self.stdscr.addstr(user_id_num_y, welcome_x, welcome_msg, self.__terminal_color | curses.A_BOLD)
+		self.stdscr.refresh()
+
+		return user_id_num
+	# END __show_user_id_num_inputbox
+
+	### DEPRECATED! Moved to login with ID instead ###
+	"""
 		Gets the Y-coordinate for USERNAME input box location.
 		formerElement:bool is True if we have a former element above the USERNAME input box - that way the input box will be below it with an empty break line,
 							False otherwise.
@@ -257,8 +320,8 @@ class Menu:
 			str: The entered PIN code as a string.
 	"""
 	def __show_pincode_inputbox(self, pin_y, formerElement=False) -> str:
-		pin_prompt = "Enter PIN (4 digits): "
-		max_pin_length = 14
+		max_pin_length = 5
+		pin_prompt = f"Enter PIN ({max_pin_length - 1} digits): "
 		pin_y += 2 if formerElement else 0
 		pin_x = self.__get_middle_x(pin_prompt + " " * max_pin_length)
 		# Input for PIN (hidden with *)
@@ -310,12 +373,13 @@ class Menu:
 			self.__display_title()
 			self.__display_back_title()
 			screen_y = self.height // 2 - 2 # Center the username input box
-			username = self.__show_username_inputbox(screen_y)
+			# username = self.__show_username_inputbox(screen_y) # Deprecated
+			user_id_num = self.__show_user_id_num_inputbox(screen_y)
 			pin = self.__show_pincode_inputbox(screen_y , formerElement=True)
 
 			# Check if the username and PIN are correct, and set the user info
-			if not self.__atm.login(username, pin):
-				login_failed_msg = "Invalid username/PIN. try again. (Enter to continue)"
+			if not self.__atm.login(user_id_num, pin):
+				login_failed_msg = "Invalid ID/PIN. try again. (Enter to continue)"
 				login_x = self.__get_middle_x(login_failed_msg)
 				self.stdscr.addstr(screen_y + 4, login_x, login_failed_msg, self.__terminal_color | curses.A_BOLD | curses.A_STANDOUT | curses.A_UNDERLINE)
 				self.stdscr.refresh()
@@ -334,7 +398,7 @@ class Menu:
 		while self.__atm.is_logged_in():
 			self.stdscr.clear()
 			self.stdscr.refresh()
-			self.__display_greet_title()
+			self.__display_greet_title(user_fullname=self.__atm.get_user_name())
 			middle_y = (self.height // 2) - len(self.__menu_actions)
 			for action, options in self.__menu_actions.items():
 				msg = options["msg"]
