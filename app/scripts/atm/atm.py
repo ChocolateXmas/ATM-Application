@@ -55,7 +55,58 @@ class Atm:
         Returns True if the user exists and the pin is correct.
         False otherwise.
     """
-    def login(self, fullName: str, pin: str) -> bool:
+    def login(self, user_id_num: str, pin: str) -> bool:
+        if self.is_logged_in():
+            return False
+        # END if
+        try: 
+            # MySQl connection
+            with self.__db_config.connect() as (conn, cursor):
+                # Step 1: SELECT user by fullname (names should ideally be unique or you use ID/username/email)
+                cursor.execute("""
+                    SELECT users.id, users.id_number, users.fullname, users.balance, pincodes.pin
+                    FROM users
+                    JOIN pincodes ON users.id = pincodes.user_id
+                    WHERE users.id_number = %s
+                """, (user_id_num,))
+                result = cursor.fetchone()  # Or handle duplicates with fetchall()
+                # Step 2: Compare entered PIN with hashed one
+                try:
+                    if result and passowrd_hasher.verify(result["pin"], pin):
+                        self.__id = result["id"]
+                        self.__userName = result["fullname"]
+                        self.__id_num = result["id_number"]
+                        self.__pincode = result["pin"]
+                        self.__balance = result["balance"]
+                        self.__loggedIn = True
+                        return True
+                    # END if
+                    else:
+                        return False
+                    # END else
+                except passowrd_hasher.VerifyMismatchError:
+                    return False
+                # END except VerifyMismatchError
+                except Exception as e:
+                    return False
+                # END except Exception
+            # END config.connect()
+        # END try
+        except mysql.connector.Error as err: 
+            return False
+        # END except mysql.connector.Error
+        except Exception as e: 
+            return False
+        # END except Exception
+    # END login
+
+    ### DEPREACTED! Moved to login (by ID) ###
+    """
+        False if user already logged in.
+        Returns True if the user exists and the pin is correct.
+        False otherwise.
+    """
+    def login_username(self, fullName: str, pin: str) -> bool:
         if self.is_logged_in():
             return False
         # END if
@@ -98,7 +149,7 @@ class Atm:
         except Exception as e: 
             return False
         # END except Exception
-    # END login
+    # END login_username
 
     # Sets user's account info to None and logs out the user
     """
@@ -165,7 +216,12 @@ class Atm:
             raise ValueError(self.__FAILED_UPDATE_BALANCE)
     # END __update_balance
 
+    """
+        Returns the user's full name.
+        Returns None if the user is not logged in.
+    """
     def get_user_name(self) -> str: return self.__userName
+    
     def set_user_name(self, fullName: str) -> str: self.__userName = fullName
 
     def get_balance(self) -> float: return self.__balance
