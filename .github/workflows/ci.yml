@@ -21,7 +21,7 @@ jobs:
       
       - name: Install Runtime dependencies
         run: |
-          pip -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install -r app/requirements.txt
 
       - name: Install dependencies
