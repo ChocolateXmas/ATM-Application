@@ -1,5 +1,11 @@
 from scripts.pincode.pincode import Pincode
 from scripts.config.config import Config
+from scripts.constants.constants import USER_NOT_LOGGED_IN, \
+                                        AMOUNT_MULT_NOT_VALID, \
+                                        AMOUNT_INSUFFICIENT_BALANCE,\
+                                        FAILED_UPDATE_BALANCE, \
+                                        FAILED_UPDATE_PIN, \
+                                        SERVER_CONNECTION_ERROR 
 from scripts.config.utils import password_hasher as passowrd_hasher
 import datetime
 import mysql.connector
@@ -14,17 +20,6 @@ class Atm:
         self.__loggedIn = False # True if user is logged in, False otherwise
 
         self.__db_config = Config() # MySQL connection pool
-        
-        self.__USER_NOT_LOGGED_IN = "User is not logged in"
-
-        self.__AMOUNT_MULT_NOT_VALID = "Amount must be a multiple of 20, 50 or 100"
-        self.__AMOUNT_INSUFFICIENT_BALANCE = "Insufficient NIS Balance"
-        
-        self.__FAILED_UPDATE_BALANCE = "Failed to update balance"
-        self.__FAILED_UPDATE_PIN = "Failed to update PIN"
-        
-        self.__SERVER_CONNECTION_ERROR = "Server Connection Error"
-
     # END __init__
 
     def __set_none(self) -> None:
@@ -47,7 +42,7 @@ class Atm:
     # Raises a ValueError if the user is not logged in
     def __ensure_logged_in(self) -> None:
         if not self.is_logged_in():
-            raise ValueError(self.__USER_NOT_LOGGED_IN)
+            raise ValueError(USER_NOT_LOGGED_IN)
     # END ensure_logged_in
 
     """
@@ -158,7 +153,7 @@ class Atm:
     """
     def logOut(self) -> None:
         if not self.is_logged_in():
-            raise ValueError(self.__USER_NOT_LOGGED_IN)
+            raise ValueError(USER_NOT_LOGGED_IN)
         self.__set_none()
     # END logOut
 
@@ -178,7 +173,7 @@ class Atm:
             self.__balance += amount
             self.__update_balance()
         else:
-            raise ValueError(self.__AMOUNT_MULT_NOT_VALID)
+            raise ValueError(AMOUNT_MULT_NOT_VALID)
     # END deposit
 
     """
@@ -190,9 +185,9 @@ class Atm:
     def withdraw(self, amount: float) -> None:
         self.__ensure_logged_in()
         if amount > self.__balance:
-            raise ValueError(self.__AMOUNT_INSUFFICIENT_BALANCE)
+            raise ValueError(AMOUNT_INSUFFICIENT_BALANCE)
         elif not self.is_valid_amount(amount):
-            raise ValueError(self.__AMOUNT_MULT_NOT_VALID)
+            raise ValueError(AMOUNT_MULT_NOT_VALID)
         self.__balance -= amount
         self.__update_balance()
     # END withdraw
@@ -211,9 +206,9 @@ class Atm:
                 conn.commit()
             # END with config.connect()
         except mysql.connector.Error as err:
-            raise ValueError(self.__SERVER_CONNECTION_ERROR)
+            raise ValueError(SERVER_CONNECTION_ERROR)
         except Exception as e:
-            raise ValueError(self.__FAILED_UPDATE_BALANCE)
+            raise ValueError(FAILED_UPDATE_BALANCE)
     # END __update_balance
 
     """
@@ -239,9 +234,9 @@ class Atm:
                 conn.commit()
             # END with db_config.connect
         except mysql.connector.Error as err:
-            raise ValueError(self.__SERVER_CONNECTION_ERROR)
+            raise ValueError(SERVER_CONNECTION_ERROR)
         except Exception as e:
-            raise ValueError(self.__FAILED_UPDATE_PIN)
+            raise ValueError(FAILED_UPDATE_PIN)
     # END change_pin
 
     def get_recipe(self) -> list:

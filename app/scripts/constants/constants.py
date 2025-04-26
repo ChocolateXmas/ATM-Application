@@ -1,0 +1,6 @@
+USER_NOT_LOGGED_IN = "User is not logged in"
+AMOUNT_MULT_NOT_VALID = "Amount must be a multiple of 20, 50 or 100"
+AMOUNT_INSUFFICIENT_BALANCE = "Insufficient NIS Balance"
+FAILED_UPDATE_BALANCE = "Failed to update balance"
+FAILED_UPDATE_PIN = "Failed to update PIN"
+SERVER_CONNECTION_ERROR = "Server Connection Error"

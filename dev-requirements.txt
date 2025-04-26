@@ -1,0 +1,10 @@
+# DEV and CI requirements
+pytest
+flake8
+black
+pytest-cov
+
+# Security
+pip-audit
+safety
+bandit
