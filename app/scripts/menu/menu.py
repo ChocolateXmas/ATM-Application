@@ -2,7 +2,7 @@
 
 import curses
 from curses.textpad import Textbox, rectangle
-from scripts.atm.atm import Atm
+from ..atm.atm import Atm
 
 class Menu:
 	def __init__(self, stdscr, title="Menu"):

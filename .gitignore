@@ -10,6 +10,12 @@ gitMsg.txt
 **/__pycache__/
 ***/__pycache__/
 
+# Python Test Cache Folders
+# These folders are used by Python testing frameworks to store cache files and should not be tracked by git
+*/.pytest_cache/
+**/.pytest_cache/
+***/.pytest_cache/
+
 # Secrets
 # These files are used to store sensitive information and should not be tracked by git
 secrets/*.txt

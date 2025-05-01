@@ -1,12 +1,12 @@
-from scripts.pincode.pincode import Pincode
-from scripts.config.config import Config
-from scripts.constants.constants import USER_NOT_LOGGED_IN, \
+from ..pincode.pincode import Pincode
+from ..config.config import Config
+from ..config.utils import password_hasher as password_hasher
+from ..constants.constants import USER_NOT_LOGGED_IN, \
                                         AMOUNT_MULT_NOT_VALID, \
                                         AMOUNT_INSUFFICIENT_BALANCE,\
                                         FAILED_UPDATE_BALANCE, \
                                         FAILED_UPDATE_PIN, \
                                         SERVER_CONNECTION_ERROR 
-from scripts.config.utils import password_hasher as passowrd_hasher
 import datetime
 import mysql.connector
 
@@ -67,7 +67,7 @@ class Atm:
                 result = cursor.fetchone()  # Or handle duplicates with fetchall()
                 # Step 2: Compare entered PIN with hashed one
                 try:
-                    if result and passowrd_hasher.verify(result["pin"], pin):
+                    if result and password_hasher.verify(result["pin"], pin):
                         self.__id = result["id"]
                         self.__userName = result["fullname"]
                         self.__id_num = result["id_number"]
@@ -79,7 +79,7 @@ class Atm:
                     else:
                         return False
                     # END else
-                except passowrd_hasher.VerifyMismatchError:
+                except password_hasher.VerifyMismatchError:
                     return False
                 # END except VerifyMismatchError
                 except Exception as e:
@@ -118,7 +118,7 @@ class Atm:
                 result = cursor.fetchone()  # Or handle duplicates with fetchall()
                 # Step 2: Compare entered PIN with hashed one
                 try:
-                    if result and passowrd_hasher.verify(result["pin"], pin):
+                    if result and password_hasher.verify(result["pin"], pin):
                         self.__id = result["id"]
                         self.__userName = result["fullname"]
                         self.__id_num = result["id_number"]
@@ -130,7 +130,7 @@ class Atm:
                     else:
                         return False
                     # END else
-                except passowrd_hasher.VerifyMismatchError:
+                except password_hasher.VerifyMismatchError:
                     return False
                 # END except VerifyMismatchError
                 except Exception as e:
@@ -195,7 +195,6 @@ class Atm:
     # TODO: convert __update_balance to a function that updates the balance in the database
     def __update_balance(self) -> None:
         self.__ensure_logged_in()
-        # users[self.__userName]["balance"] = self.__balance
         try:
             with self.__db_config.connect() as (conn, cursor):
                 cursor.execute("""
@@ -230,7 +229,7 @@ class Atm:
                     UPDATE pincodes
                     SET pin = %s
                     WHERE user_id = %s
-                """, (passowrd_hasher.hash(newPin), self.__id))
+                """, (password_hasher.hash(newPin), self.__id))
                 conn.commit()
             # END with db_config.connect
         except mysql.connector.Error as err:
