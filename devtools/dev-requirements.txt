@@ -1,0 +1,16 @@
+# DEV and CI requirements
+pytest  # Unit Testing Framework
+pytest-cov  # Code Coverage Trackign
+flake8  # Linter for style errors
+pylint  # Linter for code quality
+black  # Auto Code formatter
+
+# Security
+pip-audit  # Checks for known vulnerabilities in deps
+safety  # Vulnerabilities DB Scanner
+bandit  # Static Security Checker
+
+setuptools>=61.0 
+
+# Install local flake8 plugins
+-e .

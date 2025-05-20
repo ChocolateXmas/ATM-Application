@@ -1,8 +1,6 @@
 venv/
 */venv/
 
-gitMsg.txt
-
 # Python Cache Folders
 # These folders are used by Python to store bytecode and other cache files and should not be tracked by git
 */__pycache__/
@@ -14,3 +12,9 @@ gitMsg.txt
 */.pytest_cache/
 **/.pytest_cache/
 ***/.pytest_cache/
+
+# Secrets
+# These files are used to store sensitive information and should not be tracked by git
+secrets/*.txt
+# But dont ignore the example secrets file
+!secrets/*.txt.example

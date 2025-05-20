@@ -10,7 +10,7 @@ services:
       retries: 5
     volumes:
       - db_data:/var/lib/mysql
-      - ./app/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./src/app/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     secrets:
       - mysql_name
       - mysql_user
@@ -25,7 +25,7 @@ services:
       - "3306:3306"
   
   app:
-    build: ./app
+    build: ./src/app
     container_name: atm_app
     restart: always
     stdin_open: true # For interactive mode
@@ -42,18 +42,18 @@ services:
       DB_HOST: db
       DB_NAME: /run/secrets/mysql_name
     volumes: 
-      - ./app:/app
+      - ./src/app:/app
     entrypoint: ["/bin/bash", "./entrypoint.sh"]
 
 secrets: 
   mysql_name: 
-    file: ./secrets/mysql_name.txt
+    file: ./src/secrets/mysql_name.txt
   mysql_root_password:
-    file: ./secrets/mysql_root_password.txt
+    file: ./src/secrets/mysql_root_password.txt
   mysql_password:
-    file: ./secrets/mysql_password.txt
+    file: ./src/secrets/mysql_password.txt
   mysql_user:
-    file: ./secrets/mysql_user.txt  
+    file: ./src/secrets/mysql_user.txt  
 
 volumes:
   db_data: 

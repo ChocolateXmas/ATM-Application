@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from app.scripts.atm.atm import Atm, \
+from src.app.scripts.atm.atm import Atm, \
                                 AMOUNT_INSUFFICIENT_BALANCE, \
                                 AMOUNT_MULT_NOT_VALID
 
@@ -8,7 +8,7 @@ from app.scripts.atm.atm import Atm, \
 @pytest.fixture
 def atm():
     # Patch Config.__init__ before creating Atm instance, so db queries will not be execeuted
-    with patch('app.scripts.config.config.Config.__init__', lambda self: setattr(self, 'pool', None)):
+    with patch('src.app.scripts.config.config.Config.__init__', lambda self: setattr(self, 'pool', None)):
         atm = Atm()
         # Stub __update_balance to avoid DB access
         atm._Atm__update_balance = lambda: None

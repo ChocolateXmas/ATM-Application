@@ -2,7 +2,8 @@ import mysql.connector
 import os
 from scripts.config.config import Config
 
-script_name = os.path.basename(__file__) # get the current script file name
+script_name = os.path.basename(__file__)  # get the current script file name
+
 
 def init_db():
     config = Config()
@@ -17,7 +18,7 @@ def init_db():
             conn.commit()
             print(f"{script_name} | [✓] Database initialized from schema.sql.")
         # END with config.connect()
-    # END try   
+    # END try
     except mysql.connector.Error as err:
         print(f"{script_name} | Error initializing database: {err}")
         exit(1)
@@ -27,6 +28,7 @@ def init_db():
         exit(1)
     # END Exception
 # END init_db
+
 
 if __name__ == "__main__":
     init_db()

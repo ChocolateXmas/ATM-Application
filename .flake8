@@ -1,0 +1,9 @@
+[flake8]
+max-line-length = 100
+ignore = E203, W503
+exclude = .git,__pycache__,build,dist
+
+; [flake8:local-plugins]
+; paths = devtools/flake8_plugins
+; extension =
+;     CST = flake8_plugins.block_ender:BlockEnder

@@ -1,0 +1,20 @@
+[tool.black]
+line-length = 100
+target-version = ['py311']
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+)/
+'''
+
+[project]
+authors = [
+  {name = "Alex Beigel / ChocolateXmas", email = "alex.beigel@gmail.com"}
+]
+maintainers = [
+  {name = "Alex Beigel / ChocolateXmas", email = "alex.beigel@gmail.com"},
+]
+description = "Interactive, console-based ATM application with secure Docker-Compose setup, MySQL integration, and user-friendly CLI menu for deposits, withdrawals, PIN management, and receipt generation."
+readme = {file = "README.txt", content-type = "text/markdown"}
