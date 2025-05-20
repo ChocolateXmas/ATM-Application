@@ -10,6 +10,7 @@ exclude = '''
 '''
 
 [project]
+name = "ATM-Application"
 authors = [
   {name = "Alex Beigel / ChocolateXmas", email = "alex.beigel@gmail.com"}
 ]
