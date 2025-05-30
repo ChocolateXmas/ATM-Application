@@ -1,14 +1,3 @@
-[tool.black]
-line-length = 100
-target-version = ['py311']
-exclude = '''
-/(
-    \.git
-  | \.venv
-  | build
-)/
-'''
-
 [project]
 name = "ATM-Application"
 authors = [
@@ -20,3 +9,14 @@ maintainers = [
 description = "Interactive, console-based ATM application with secure Docker-Compose setup, MySQL integration, and user-friendly CLI menu for deposits, withdrawals, PIN management, and receipt generation."
 readme = {file = "README.txt", content-type = "text/markdown"}
 version = "0.2.0"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+)/
+'''
